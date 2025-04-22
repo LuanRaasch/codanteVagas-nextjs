@@ -1,16 +1,30 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FormItem from "./form-item";
+import { createJob } from "@/lib/actions";
+import { useActionState } from "react";
+import { CircleAlert } from "lucide-react";
 
 export default function Cadastro() {
+
+    const [state, createJobAction, pending] = useActionState(createJob, null);
+
     return (
         <main>
             <h2 className="font-display mb-12 text-2xl font-bold">Cadastrar Vaga</h2>
             <Card className="mx-auto w-full py-8">
-                <form>
+                <form action={createJobAction}>
                     <CardContent className="space-y-6">
+                        {state?.error && (
+                            <div className="flex items-center gap-4 rounded-md border border-red-200 bg-red-100 p-4 py-6 text-red-900">
+                                <CircleAlert className="inline-block h-6 w-6" />
+                                {state.message}
+                            </div>
+                        )}
                         <FormItem
                             name="Título da Vaga"
                             description="Este será o título da vaga que será exibido na busca. Máximo de 30 caracteres"
@@ -115,10 +129,11 @@ export default function Cadastro() {
 
                     <CardFooter>
                         <Button
+                            disabled={pending}
                             type="submit"
                             className="ml-auto w-full rounded-none px-10 md:w-auto"
                         >
-                            Salvar
+                            {pending ? 'Salvando...' : 'Submeter'}
                         </Button>
                     </CardFooter>
                 </form>
